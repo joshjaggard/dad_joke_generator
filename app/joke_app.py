@@ -33,9 +33,6 @@ def api_joke():
             'source': joke_url,
             'success': True
         }
-        
-        if joke_url:
-            response_data['url'] = joke_url
             
         return jsonify(response_data)
     
