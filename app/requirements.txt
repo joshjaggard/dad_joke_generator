@@ -1,0 +1,5 @@
+# Flask web app dependencies
+Flask
+Werkzeug
+# Joke grabber dependencies
+httpx

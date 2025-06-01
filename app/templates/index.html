@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dad Joke Generator</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='android-chrome-192x192.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <meta name="theme-color" content="#3a5998">
+</head>
+<body>
+    <div class="container">
+        <span class="emoji">🤣</span>
+        <h1>Dad Joke Generator</h1>
+        <p class="subtitle">Lowering the bar, one joke at a time.</p>
+        
+        <div class="joke-container">
+            <div>
+                <div class="joke-text" id="joke-text">
+                    Click the button below to get a dad joke<br>
+                    ...if you dare!
+                </div>
+                <div class="joke-source" id="joke-source" style="display: none;">
+                    Powered by the icanhazdadjoke API: <a href="#" id="joke-link" target="_blank" rel="noopener noreferrer">View Original</a>
+                </div>
+            </div>
+        </div>
+        
+        <button class="get-joke-btn" id="get-joke-btn" onclick="fetchJoke()">
+            Get Dad Joke
+        </button>
+        
+        <div class="error" id="error-message" style="display: none;"></div>
+        <div class="footer">
+            <a href="https://github.com/joshjaggard/dad_joke_generator" target="_blank" class="github-link">
+                <img src="{{url_for('static', filename='github_icon.svg')}}" alt="GitHub" class="github-icon">
+                <span>View on GitHub</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        async function fetchJoke() {
+            const jokeText = document.getElementById('joke-text');
+            const jokeSource = document.getElementById('joke-source');
+            const jokeLink = document.getElementById('joke-link');
+            const button = document.getElementById('get-joke-btn');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Hide any previous error and source
+            errorMessage.style.display = 'none';
+            jokeSource.style.display = 'none';
+            
+            // Show loading state
+            jokeText.textContent = 'Loading a great joke...';
+            jokeText.className = 'joke-text loading';
+            button.disabled = true;
+            button.textContent = 'Loading...';
+            
+            try {
+                // Replace '/api/joke' with your actual Flask endpoint
+                const response = await fetch('/api/joke');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display the joke
+                jokeText.textContent = data.joke || data.setup + ' ' + data.punchline || 'No joke found!';
+                jokeText.className = 'joke-text';
+                
+                // Display source link if provided
+                if (data.source || data.url) {
+                    jokeLink.href = data.source || data.url;
+                    jokeSource.style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Error fetching joke:', error);
+                jokeText.textContent = 'Click the button to get a dad joke!';
+                jokeText.className = 'joke-text';
+                
+                errorMessage.textContent = 'Oops! Could not fetch a joke. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                // Reset button
+                button.disabled = false;
+                button.textContent = 'Get Another Joke';
+            }
+        }
+    </script>
+</body>
+</html>
