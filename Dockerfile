@@ -6,10 +6,14 @@ WORKDIR /app
 # Copy project files into the container
 COPY /app /app
 
+# Pass version arg
+ARG APP_VERSION='docker-dev-build'
+RUN echo $APP_VERSION > app_version
+
 # Install dependencies
 RUN pip install -r requirements.txt
 
 # Expose port 8080 for Flask
 EXPOSE 8080
 
-CMD ["python", "joke_app.py"]
+CMD ["gunicorn","--config", "gunicorn_config.py", "joke_app:app"]

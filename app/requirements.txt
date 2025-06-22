@@ -1,5 +1,6 @@
 # Flask web app dependencies
 Flask
 Werkzeug
+Gunicorn
 # Joke grabber dependencies
 httpx
